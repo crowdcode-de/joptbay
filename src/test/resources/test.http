@@ -1,0 +1,49 @@
+
+PUT http://localhost:8080/memoryGuzzler/start
+Accept: */*
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/memoryGuzzler/stop
+Accept: */*
+Content-Type: application/json
+
+###
+
+
+POST http://localhost:8080/auctions
+Accept: */*
+Content-Type: application/json
+
+{
+  "productTitle": "MacBook Pro",
+  "productDescription": "An awesome thing to work with.",
+  "secondsToRun": 123
+}
+
+###
+
+GET http://localhost:8080/auctions/19687906-8934-4371-bd8a-51446f0cd500
+Accept: */*
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/auctions/35b9730b-9db9-4a1b-bf49-f6828e1c959d
+Accept: */*
+Content-Type: application/json
+
+{
+  "email": "bieter@crowdcode.io",
+  "amount": 122
+}
+
+###
+
+GET http://localhost:8080/auctions?search=BOOK
+Accept: */*
+Content-Type: application/json
+
+###
+
