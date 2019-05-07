@@ -16,24 +16,17 @@ public class SimulateIssueController {
         this.memoryGuzzler = memoryGuzzler;
     }
 
-    @PutMapping("/speicherfresser/start")
+    @PutMapping("/guzzler/start")
     public ResponseEntity<String> startSpeicherfresser() {
         memoryGuzzler.start();
         return ResponseEntity.ok("Starting memory wasting");
     }
 
-    @PutMapping("/speicherfresser/stop")
+    @PutMapping("/guzzler/stop")
     public ResponseEntity<String> stopSpeicherfresser() {
         memoryGuzzler.stop();
         return ResponseEntity.ok("Stopping memory wasting");
     }
 
-    @PutMapping("/memoryleak/start")
-    public ResponseEntity<String> startMemoryLeak() {
-        new Thread((()->{
-
-        })).start();
-        return ResponseEntity.ok("Memory Leaking started");
-    }
 
 }

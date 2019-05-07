@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
-@Profile({"expired"})
+@Profile("expired")
 public class PersistOnlyExpiredAuctionService implements AuctionService {
 
     protected Map<String, Auction> activeAuctions = new ConcurrentHashMap<>();
@@ -86,7 +86,7 @@ public class PersistOnlyExpiredAuctionService implements AuctionService {
     }
 
     @Override
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 10_000)
     public void handleExpiredAuctions() {
         List<Auction> expiredAuctions = activeAuctions
                 .values()

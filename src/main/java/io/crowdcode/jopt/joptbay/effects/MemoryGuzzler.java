@@ -22,10 +22,11 @@ public class MemoryGuzzler {
 
     private volatile Thread currentThread;
 
+    private final List<Map<BigDecimal, BigDecimal>> memoryLeakStore = new LinkedList<>();
+
     public MemoryGuzzler() throws IOException {
         this.out = Files.newOutputStream(Paths.get("memory-guzzler.csv"));
     }
-
 
     public static Map<BigDecimal, BigDecimal> createHashMap(long size) {
         Map<BigDecimal, BigDecimal> map = new HashMap<>();
@@ -43,7 +44,7 @@ public class MemoryGuzzler {
         keepRunning = true;
         if (currentThread == null) {
             currentThread = new Thread(() -> {
-                List<Map<BigDecimal, BigDecimal>> list = new LinkedList<>();
+                List<Map<BigDecimal, BigDecimal>> list = memoryLeakStore;
                 long start = System.currentTimeMillis();
                 try {
                     runUntilBreak(list, start);
@@ -73,7 +74,7 @@ public class MemoryGuzzler {
                 if (counter % 2 == 0) {
                     list.add(speicherMap);
                 }
-                if (counter % 8 == 0) {
+                if (counter % 20 == 0) {
                     removeFirstElement(list);
                 }
                 if (counter % 500 == 0) {
@@ -85,8 +86,6 @@ public class MemoryGuzzler {
         } finally {
             out.close();
         }
-
-
     }
 
     private Long log(final long tsStart, Long ts, final long counter, final int level) throws IOException {

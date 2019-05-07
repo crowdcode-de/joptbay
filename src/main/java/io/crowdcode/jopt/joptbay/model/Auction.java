@@ -71,8 +71,8 @@ public class Auction extends AbstractEntity<Long> {
 
     public boolean isRunning() {
         return (beginDateTime.isBefore(LocalDateTime.now())
-                || beginDateTime.isEqual(LocalDateTime.now()))
-                && expireDateTime.isAfter(LocalDateTime.now());
+                || beginDateTime.isEqual(LocalDateTime.now())
+                && expireDateTime.isAfter(LocalDateTime.now()));
     }
 
 }

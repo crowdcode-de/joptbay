@@ -12,6 +12,7 @@ import io.crowdcode.jopt.joptbay.model.Bid;
 import io.crowdcode.jopt.joptbay.model.Product;
 import io.crowdcode.jopt.joptbay.repository.AuctionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Transactional
-@Profile({"!expired","!readwrite"})
+@Profile({"!expired & !readwrite"})
 public class DefaultAuctionService implements AuctionService {
 
-    protected Map<String, Auction> activeAuctions = new HashMap<>();
+
+    protected Map<String, Auction> activeAuctions = new ConcurrentHashMap<>();
 
     private AuctionRepository auctionRepository;
 
@@ -69,19 +73,18 @@ public class DefaultAuctionService implements AuctionService {
     }
 
     protected void executeSearch(String searchTerm, List<ProductInfo> matchingProducts) {
-        for (Auction auction : activeAuctions.values()) {
-            if (auction.isRunning()) {
-                Product product = auction.getProduct();
-                if (matchesSearch(product.getTitle(), searchTerm)) {
-                    matchingProducts.add(mapToProductInfo(product));
-                    continue;
-                }
-                if (matchesSearch(product.getDescription(), searchTerm)) {
-                    matchingProducts.add(mapToProductInfo(product));
-                    continue;
-                }
-            }
-        }
+        matchingProducts.addAll(activeAuctions.values()
+                .parallelStream()
+//                .stream()
+                .filter(Auction::isRunning)
+                .map(Auction::getProduct)
+                .filter((p) -> matchesTitleAndDescriptionOfProduct(searchTerm, p))
+                .map(this::mapToProductInfo)
+                .collect(Collectors.toList()));
+    }
+
+    private boolean matchesTitleAndDescriptionOfProduct(String searchTerm, Product product) {
+        return matchesSearch(product.getTitle(), searchTerm) || matchesSearch(product.getDescription(), searchTerm);
     }
 
     private ProductInfo mapToProductInfo(Product product) {
@@ -125,11 +128,33 @@ public class DefaultAuctionService implements AuctionService {
     }
 
     private AuctionSummary mapToSummary(Auction auction) {
+        valideAuction(auction);
+
         return new AuctionSummary()
                 .setExpiresAt(auction.getExpireDateTime())
                 .setHighestBid(auction.getHighestBid())
                 .setProductTitle(auction.getProduct().getTitle())
                 .setProductUuid(auction.getProduct().getProductUuid());
+    }
+
+    @Value("${shouldThrowExceptions:false}")
+    private boolean shouldThrowExceptions = false;
+
+
+    private long counter = 0;
+
+    private void valideAuction(Auction auction) {
+        if (shouldThrowExceptions) {
+            try {
+                counter++;
+                if (counter % 4 == 0) {
+                    throw new NumberFormatException("ups");
+                }
+            } catch (NumberFormatException e) {
+                // do something else
+            }
+        }
+
     }
 
     @Override

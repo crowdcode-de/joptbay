@@ -21,7 +21,7 @@ public class NativeThreadOutOfMemoryDemo {
                     long value = 0;
                     while (true) {
                         try {
-                            recursiveSleep(1_000); // kill it with 1_000_000
+                            recursiveSleep(512*1024); // kill it
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -34,7 +34,7 @@ public class NativeThreadOutOfMemoryDemo {
     }
 
     public static void recursiveSleep(int deep) throws InterruptedException {
-        long a = 1_000_000_000 + deep;
+        long a = Long.MAX_VALUE - deep;
         if (deep > 0) {
             recursiveSleep(--deep);
         } else {

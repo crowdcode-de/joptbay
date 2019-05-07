@@ -1,11 +1,11 @@
 
-PUT http://localhost:8080/memoryGuzzler/start
+PUT http://localhost:8080/guzzler/start
 Accept: */*
 Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/memoryGuzzler/stop
+PUT http://localhost:8080/guzzler/stop
 Accept: */*
 Content-Type: application/json
 

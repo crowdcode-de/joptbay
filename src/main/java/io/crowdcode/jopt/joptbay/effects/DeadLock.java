@@ -35,7 +35,7 @@ public class DeadLock {
         }
     }
 
-    public void buildDeadlock() {
+    public DeadLock buildDeadlock() {
         ThreadGroup group = new ThreadGroup("Deadlock-Simulation");
         Thread threadA = new Thread(group, this::aThenB, "AthenB");
         Thread threadB = new Thread(group, this::bThenA, "BthenA");
@@ -53,6 +53,7 @@ public class DeadLock {
             Thread.yield();
         }
         Thread.yield();
+        return this;
     }
 
     public static void main(String[] args) {
