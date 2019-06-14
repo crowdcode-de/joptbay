@@ -28,5 +28,13 @@ public class SimulateIssueController {
         return ResponseEntity.ok("Stopping memory wasting");
     }
 
+    @PutMapping("/shutdown")
+    public ResponseEntity<Void> shutdown() {
+        new Thread(() -> {
+            log.info("Shutting down system");
+            System.exit(0);
+        }).start();
+        return ResponseEntity.accepted().build();
+    }
 
 }
