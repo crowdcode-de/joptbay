@@ -5,7 +5,7 @@ import io.crowdcode.jopt.joptbay.effects.MemoryGuzzler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.dao.DeadlockLoserDataAccessException;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 
@@ -13,14 +13,14 @@ import java.io.IOException;
 @Configuration
 public class JoptConfiguration {
 
+	@Bean
+	public MemoryGuzzler speicherfresser() throws IOException {
+		return new MemoryGuzzler();
+	}
 
-    @Bean
-    public MemoryGuzzler speicherfresser() throws IOException {
-        return new MemoryGuzzler();
-    }
-
-    @Bean
-    public DeadLock deadLock() {
-        return new DeadLock().buildDeadlock();
-    }
+	@Bean
+	@Profile("deadlock")
+	public DeadLock deadLock() {
+		return new DeadLock().buildDeadlock();
+	}
 }
