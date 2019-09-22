@@ -11,7 +11,6 @@ import io.crowdcode.jopt.joptbay.model.Bid;
 import io.crowdcode.jopt.joptbay.model.Product;
 import io.crowdcode.jopt.joptbay.repository.AuctionRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,17 +28,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
-@Profile("!usePersistentService")
-public class DefaultAuctionService implements AuctionService {
+@Profile("usePersistentService")
+public class PersistentAuctionService implements AuctionService {
 
 	protected Map<String, Auction> activeAuctions = new HashMap<>();
 
 	private AuctionRepository auctionRepository;
 
-	@Value("${joptbay.archive.enabled:false}")
-	private boolean archiveIsEnabled = false;
-
-	public DefaultAuctionService(AuctionRepository auctionRepository) {
+	public PersistentAuctionService(AuctionRepository auctionRepository) {
 		this.auctionRepository = auctionRepository;
 	}
 
@@ -58,6 +53,7 @@ public class DefaultAuctionService implements AuctionService {
 					.setProduct(product);
 
 			activeAuctions.put(uuid, auction);
+			auctionRepository.save(auction);
 		}
 		return uuid;
 	}
@@ -73,30 +69,6 @@ public class DefaultAuctionService implements AuctionService {
 		return matchingProducts;
 	}
 
-	@Override
-	public Bid getHighestBidForProduct(String productUuid) throws ProductNotFoundException {
-		return retrieveAuction(productUuid).getHighestBid();
-	}
-
-	@Override
-	public AuctionSummary getAuctionSummary(String productUuid) throws ProductNotFoundException {
-		return mapToSummary(retrieveAuction(productUuid));
-	}
-
-	@Override
-	public void placeBidOnProduct(String productUuid, Bid bid) throws ProductNotFoundException, BidTooLowException, InvalidAuctionStateException {
-		synchronized (activeAuctions) {
-			Auction auction = retrieveAuction(productUuid);
-			auction.addBid(bid);
-		}
-	}
-
-
-	@Override
-	public int activeAuctionCount() {
-		return activeAuctions.size();
-	}
-
 	protected void executeSearch(String searchTerm, List<ProductInfo> matchingProducts) {
 		matchingProducts.addAll(activeAuctions.values()
 				.stream()
@@ -108,10 +80,11 @@ public class DefaultAuctionService implements AuctionService {
 	}
 
 	private boolean matchesTitleAndDescriptionOfProduct(String searchTerm, Product product) {
-		return matchesSearch(product.getTitle(), searchTerm) || matchesSearch(product.getDescription(), searchTerm);
+		return matchesSearch(product.getTitle(), searchTerm)
+				|| matchesSearch(product.getDescription(), searchTerm);
 	}
 
-	protected ProductInfo mapToProductInfo(Product product) {
+	private ProductInfo mapToProductInfo(Product product) {
 		return new ProductInfo()
 				.setProductTitle(product.getTitle())
 				.setProductUuid(product.getProductUuid());
@@ -126,9 +99,22 @@ public class DefaultAuctionService implements AuctionService {
 		return false;
 	}
 
+	@Override
+	public Bid getHighestBidForProduct(String productUuid) throws ProductNotFoundException {
+		return auctionRepository
+				.findByProductProductUuid(productUuid)
+				.orElseThrow(ProductNotFoundException::new)
+				.getHighestBid();
+	}
+
+	@Override
+	public AuctionSummary getAuctionSummary(String productUuid) throws ProductNotFoundException {
+		return mapToSummary(retrieveAuction(productUuid));
+	}
 
 	private Auction retrieveAuction(String productUuid) throws ProductNotFoundException {
 		return Optional.ofNullable(activeAuctions.get(productUuid))
+				.or(() -> auctionRepository.findByProductProductUuid(productUuid))
 				.orElseThrow(ProductNotFoundException::new);
 	}
 
@@ -141,34 +127,23 @@ public class DefaultAuctionService implements AuctionService {
 	}
 
 	@Override
+	public synchronized void placeBidOnProduct(String productUiid, Bid bid) throws ProductNotFoundException, BidTooLowException, InvalidAuctionStateException {
+		Auction auction = retrieveAuction(productUiid);
+		synchronized (activeAuctions) {
+			auction.addBid(bid);
+			auctionRepository.save(auction);
+		}
+	}
+
+	@Override
 	@Scheduled(fixedRate = 5_000)
 	public void handleExpiredAuctions() {
-		log.info("Archiving expired auctions");
-		archiveExpiredAuctions();
-		removeExpiredAuctionFromCache();
+		log.info("Removing expired auctions");
+		activeAuctions.values().removeIf(Auction::isExpired);
 	}
 
-	private void removeExpiredAuctionFromCache() {
-		List<Auction> auctionsForChecking = new ArrayList<>(activeAuctions.values());
-		for (Iterator<Auction> iter = auctionsForChecking.iterator(); iter.hasNext(); ) {
-			Auction auction = iter.next();
-			if (auction.isExpired()) {
-				iter.remove();
-			}
-		}
+	@Override
+	public int activeAuctionCount() {
+		return activeAuctions.size();
 	}
-
-	private void archiveExpiredAuctions() {
-		// disabled archive for immemory dabase
-		if (archiveIsEnabled) {
-			activeAuctions
-					.values()
-					.parallelStream()
-					.filter(Auction::isExpired)
-					.map(auctionRepository::save)
-					.collect(Collectors.toList());
-		}
-	}
-
-
 }
