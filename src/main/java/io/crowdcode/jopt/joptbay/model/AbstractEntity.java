@@ -6,6 +6,9 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @MappedSuperclass
 public class AbstractEntity<ID extends Serializable> implements Identifiable<ID> {
 

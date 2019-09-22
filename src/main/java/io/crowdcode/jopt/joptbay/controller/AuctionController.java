@@ -22,9 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @RestController
 @RequestMapping("/auctions")
 public class AuctionController {
@@ -41,7 +45,9 @@ public class AuctionController {
 	@PostMapping()
 	public ResponseEntity<ProductUuid> startAuction(@RequestBody CreateAuction createAuction, UriComponentsBuilder uriComponentsBuilder) {
 		String uuid = auctionEngine.startAuction(createAuction);
-        URI location = uriComponentsBuilder.pathSegment("{uuid}").build(Map.of("uuid", uuid));
+		Map<String, String> variables = new HashMap<>();
+		variables.put("uuid", uuid);
+        URI location = uriComponentsBuilder.pathSegment("{uuid}").build(variables);
         return ResponseEntity.created(location).body(new ProductUuid(uuid));
 	}
 

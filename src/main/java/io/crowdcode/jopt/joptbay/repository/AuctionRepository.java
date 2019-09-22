@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.Set;
 
-
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Repository
 public interface AuctionRepository extends JpaRepository<Auction, Long> {
 

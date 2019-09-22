@@ -4,6 +4,9 @@ import io.crowdcode.jopt.joptbay.model.Bid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Service
 public class FraudValidator {
 

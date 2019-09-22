@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 @Service
 @Transactional
@@ -113,9 +115,17 @@ public class PersistentAuctionService implements AuctionService {
 	}
 
 	private Auction retrieveAuction(String productUuid) throws ProductNotFoundException {
-		return Optional.ofNullable(activeAuctions.get(productUuid))
-				.or(() -> auctionRepository.findByProductProductUuid(productUuid))
-				.orElseThrow(ProductNotFoundException::new);
+		Auction auction = activeAuctions.get(productUuid);
+		if (auction == null) {
+			auction = auctionRepository.findByProductProductUuid(productUuid)
+					.orElseThrow(ProductNotFoundException::new);
+		}
+		return auction;
+
+//		Need Java 9 or higher
+//		return Optional.ofNullable(activeAuctions.get(productUuid))
+//				.or(() -> auctionRepository.findByProductProductUuid(productUuid))
+//				.orElseThrow(ProductNotFoundException::new);
 	}
 
 	private AuctionSummary mapToSummary(Auction auction) {

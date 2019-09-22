@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 public class AuctionFixture {
 
 

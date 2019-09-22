@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 @Data
 @Entity

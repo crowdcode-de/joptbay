@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 public class MemoryGuzzler {
 

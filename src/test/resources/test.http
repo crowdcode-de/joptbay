@@ -27,10 +27,7 @@ PUT http://localhost:8080/profiling/stop
 Accept: */*
 Content-Type: application/json
 
-
-
 ###
-
 
 POST http://localhost:8080/auctions
 Accept: */*
@@ -39,24 +36,37 @@ Content-Type: application/json
 {
   "productTitle": "MacBook Pro",
   "productDescription": "An awesome thing to work with.",
-  "secondsToRun": 123
+  "secondsToRun": 500
 }
+
+> {%
+  client.global.set("uuid", response.body.uuid);
+  client.log(client.global.get("uuid"));
+%}
+
 
 ###
 
-GET http://localhost:8080/auctions/19687906-8934-4371-bd8a-51446f0cd500
+GET http://localhost:8080/auctions/{{uuid}}
 Accept: */*
 Content-Type: application/json
 
+> {%
+  client.global.set("highestBid", response.body.highestBid.amount);
+  client.global.set("next", response.body.highestBid.amount+1);
+  client.log(client.global.get("highestBid"));
+%}
+
+
 ###
 
-PUT http://localhost:8080/auctions/35b9730b-9db9-4a1b-bf49-f6828e1c959d
+PUT http://localhost:8080/auctions/{{uuid}}
 Accept: */*
 Content-Type: application/json
 
 {
   "email": "bieter@crowdcode.io",
-  "amount": 122
+  "amount": {{next}}
 }
 
 ###

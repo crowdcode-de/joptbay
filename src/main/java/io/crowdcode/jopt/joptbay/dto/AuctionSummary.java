@@ -6,6 +6,9 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Data
 @Accessors(chain = true)
 public class AuctionSummary {

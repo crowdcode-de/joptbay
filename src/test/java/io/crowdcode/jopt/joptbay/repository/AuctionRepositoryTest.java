@@ -14,6 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class AuctionRepositoryTest {

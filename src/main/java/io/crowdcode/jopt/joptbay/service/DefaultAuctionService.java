@@ -27,6 +27,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 @Service
 @Transactional
@@ -91,7 +94,6 @@ public class DefaultAuctionService implements AuctionService {
 		}
 	}
 
-
 	@Override
 	public int activeAuctionCount() {
 		return activeAuctions.size();
@@ -146,6 +148,7 @@ public class DefaultAuctionService implements AuctionService {
 		log.info("Archiving expired auctions");
 		archiveExpiredAuctions();
 		removeExpiredAuctionFromCache();
+		log.info("Active Auctions {}", activeAuctionCount());
 	}
 
 	private void removeExpiredAuctionFromCache() {

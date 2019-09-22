@@ -11,6 +11,9 @@ import io.crowdcode.jopt.joptbay.model.Bid;
 
 import java.util.List;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 public interface AuctionService {
 
 	/**

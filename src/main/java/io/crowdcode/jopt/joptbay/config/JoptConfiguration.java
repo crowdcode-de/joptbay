@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 @Configuration
 public class JoptConfiguration {

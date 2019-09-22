@@ -5,6 +5,7 @@ import io.crowdcode.jopt.joptbay.exceptions.AuctionNotStartedException;
 import io.crowdcode.jopt.joptbay.exceptions.BidTooLowException;
 import io.crowdcode.jopt.joptbay.exceptions.InvalidAuctionStateException;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,10 +19,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 @Slf4j
 @Data
 @Entity
 @Accessors(chain = true)
+@EqualsAndHashCode(callSuper = false)
 public class Auction extends AbstractEntity<Long> {
 
     @ManyToOne(cascade = CascadeType.ALL)

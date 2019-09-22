@@ -1,5 +1,8 @@
 package io.crowdcode.jopt.joptbay.effects;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 public class DeadLock {
 
 	private Object monitorA = new Object();

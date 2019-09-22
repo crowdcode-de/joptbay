@@ -3,6 +3,9 @@ package io.crowdcode.jopt.joptbay.effects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author Ingo Dueppe (CROWDCODE)
+ */
 public class NativeThreadOutOfMemoryDemo {
 
     private static AtomicLong summary = new AtomicLong();
