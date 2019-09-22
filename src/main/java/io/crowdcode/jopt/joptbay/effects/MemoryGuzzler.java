@@ -28,7 +28,7 @@ public class MemoryGuzzler {
     private final List<Map<BigDecimal, BigDecimal>> memoryLeakStore = new LinkedList<>();
 
     public MemoryGuzzler() throws IOException {
-        this.out = Files.newOutputStream(Paths.get("memory-guzzler.csv"));
+        this.out = Files.newOutputStream(Paths.get("target/memory-guzzler.csv"));
     }
 
     public static Map<BigDecimal, BigDecimal> createHashMap(long size) {
