@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @Transactional
-@Profile("usePersistentService")
+@Profile("usedb")
 public class PersistentAuctionService implements AuctionService {
 
 	protected Map<String, Auction> activeAuctions = new HashMap<>();
